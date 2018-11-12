@@ -41,10 +41,14 @@ Output: camera_matrix, dist_coeff
 Purpose: Loads the camera calibration file provided and returns the camera and
          distortion matrix saved in the calibration file.
 """
+
+
 def getCameraMatrix():
-	with np.load('System.npz') as X:
-		camera_matrix, dist_coeff, _, _ = [X[i] for i in ('mtx','dist','rvecs','tvecs')]
-	return camera_matrix, dist_coeff
+    with np.load('System.npz') as X:
+        camera_matrix, dist_coeff, _, _ = [X[i]
+                                           for i in ('mtx', 'dist', 'rvecs', 'tvecs')]
+    return camera_matrix, dist_coeff
+
 
 """
 Function Name : sin()
@@ -52,8 +56,11 @@ Input: angle (in degrees)
 Output: value of sine of angle specified
 Purpose: Returns the sine of angle specified in degrees
 """
+
+
 def sin(angle):
-	return math.sin(math.radians(angle))
+    return math.sin(math.radians(angle))
+
 
 """
 Function Name : cos()
@@ -61,13 +68,13 @@ Input: angle (in degrees)
 Output: value of cosine of angle specified
 Purpose: Returns the cosine of angle specified in degrees
 """
-def cos(angle):
-	return math.cos(math.radians(angle))
 
+
+def cos(angle):
+    return math.cos(math.radians(angle))
 
 
 ################################################################################
-
 
 """
 Function Name : detect_markers()
@@ -80,25 +87,31 @@ Purpose: This function takes the image in form of a numpy array, camera_matrix a
          and tvec are calculated and stored in a list in a prescribed format. The list
          is returned as output for the function
 """
-def detect_markers(img, camera_matrix, dist_coeff):
-	markerLength = 100
-	aruco_list = []
 
-	######################## INSERT CODE HERE ########################
-	gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-	aruco_dict = aruco.Dictionary_get(aruco.DICT_5X5_250)
-	parameters = aruco.DetectorParameters_create()
-	corners, ids, _ = aruco.detectMarkers(gray, aruco_dict,
-						parameters=parameters)
-	
-	with np.load("../../Camera.npz") as X:
-		camera_matrix, dist_coeff, _, _ = [X[i] for i in ('mtx', 'dist', 'rvecs', 'tvecs')]
-		rvec, tvec, obj = aruco.estimatePoseSingleMarkers(corners, markerLength, camera_matrix, dist_coeff)
-	
-	cv2.imwrite('markerimg.jpg', aruco.drawDetectedMarkers(img ,corners, ids, (0,255,0)))
-	##################################################################
-	
-	return aruco_list
+
+def detect_markers(img, camera_matrix, dist_coeff):
+    markerLength = 100
+    aruco_list = []
+
+    ######################## INSERT CODE HERE ########################
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    aruco_dict = aruco.Dictionary_get(aruco.DICT_5X5_250)
+    parameters = aruco.DetectorParameters_create()
+    corners, ids, _ = aruco.detectMarkers(gray, aruco_dict,
+                                          parameters=parameters)
+
+    with np.load("../../Camera.npz") as X:
+        camera_matrix, dist_coeff, _, _ = [X[i]
+                                           for i in ('mtx', 'dist', 'rvecs', 'tvecs')]
+        rvec, tvec, obj = aruco.estimatePoseSingleMarkers(
+            corners, markerLength, camera_matrix, dist_coeff)
+
+    cv2.imwrite('markerimg.jpg', aruco.drawDetectedMarkers(
+        img, corners, ids, (0, 255, 0)))
+    ##################################################################
+
+    return aruco_list
+
 
 """
 Function Name : drawAxis()
@@ -108,24 +121,29 @@ Purpose: This function takes the above specified outputs and draws 3 mutually
          perpendicular axes on the specified aruco marker in the image and
          returns the modified image.
 """
+
+
 def drawAxis(img, aruco_list, aruco_id, camera_matrix, dist_coeff):
-	for x in aruco_list:
-		if aruco_id == x[0]:
-			rvec, tvec = x[2], x[3]
-	markerLength = 100
-	m = markerLength/2
-	pts = np.float32([[-m,m,0],[m,m,0],[-m,-m,0],[-m,m,m]])
-	pt_dict = {}
-	imgpts, _ = cv2.projectPoints(pts, rvec, tvec, camera_matrix, dist_coeff)
-	for i in range(len(pts)):
-		 pt_dict[tuple(pts[i])] = tuple(imgpts[i].ravel())
-	src = pt_dict[tuple(pts[0])];   dst1 = pt_dict[tuple(pts[1])];
-	dst2 = pt_dict[tuple(pts[2])];  dst3 = pt_dict[tuple(pts[3])];
-	
-	img = cv2.line(img, src, dst1, (0,255,0), 4)
-	img = cv2.line(img, src, dst2, (255,0,0), 4)
-	img = cv2.line(img, src, dst3, (0,0,255), 4)
-	return img
+    for x in aruco_list:
+        if aruco_id == x[0]:
+            rvec, tvec = x[2], x[3]
+    markerLength = 100
+    m = markerLength/2
+    pts = np.float32([[-m, m, 0], [m, m, 0], [-m, -m, 0], [-m, m, m]])
+    pt_dict = {}
+    imgpts, _ = cv2.projectPoints(pts, rvec, tvec, camera_matrix, dist_coeff)
+    for i in range(len(pts)):
+        pt_dict[tuple(pts[i])] = tuple(imgpts[i].ravel())
+    src = pt_dict[tuple(pts[0])]
+    dst1 = pt_dict[tuple(pts[1])]
+    dst2 = pt_dict[tuple(pts[2])]
+    dst3 = pt_dict[tuple(pts[3])]
+
+    img = cv2.line(img, src, dst1, (0, 255, 0), 4)
+    img = cv2.line(img, src, dst2, (255, 0, 0), 4)
+    img = cv2.line(img, src, dst3, (0, 0, 255), 4)
+    return img
+
 
 """
 Function Name : drawCube()
@@ -135,17 +153,19 @@ Purpose: This function takes the above specified outputs and draws a cube
          on the specified aruco marker in the image and returns the modified
          image.
 """
-def drawCube(img, ar_list, ar_id, camera_matrix, dist_coeff):
-	for x in ar_list:
-		if ar_id == x[0]:
-			rvec, tvec = x[2], x[3]
-	markerLength = 100
-	m = markerLength/2
-	######################## INSERT CODE HERE ########################
 
-	
-	##################################################################
-	return img
+
+def drawCube(img, ar_list, ar_id, camera_matrix, dist_coeff):
+    for x in ar_list:
+        if ar_id == x[0]:
+            rvec, tvec = x[2], x[3]
+    markerLength = 100
+    m = markerLength/2
+    ######################## INSERT CODE HERE ########################
+
+    ##################################################################
+    return img
+
 
 """
 Function Name : drawCylinder()
@@ -155,17 +175,20 @@ Purpose: This function takes the above specified outputs and draws a cylinder
          on the specified aruco marker in the image and returns the modified
          image.
 """
-def drawCylinder(img, ar_list, ar_id, camera_matrix, dist_coeff):
-	for x in ar_list:
-		if ar_id == x[0]:
-			rvec, tvec = x[2], x[3]
-	markerLength = 100
-	radius = markerLength/2; height = markerLength*1.5
-	######################## INSERT CODE HERE ########################
 
-	
-	##################################################################
-	return img
+
+def drawCylinder(img, ar_list, ar_id, camera_matrix, dist_coeff):
+    for x in ar_list:
+        if ar_id == x[0]:
+            rvec, tvec = x[2], x[3]
+    markerLength = 100
+    radius = markerLength/2
+    height = markerLength*1.5
+    ######################## INSERT CODE HERE ########################
+
+    ##################################################################
+    return img
+
 
 """
 MAIN CODE
@@ -175,14 +198,14 @@ the ArUco markers detected in the images.
 """
 
 
-if __name__=="__main__":
-	cam, dist = getCameraMatrix()
-	img = cv2.imread("../TestCases/image_1.jpg")
-	aruco_list = detect_markers(img, cam, dist)
-	for i in aruco_list:
-		img = drawAxis(img, aruco_list, i[0], cam, dist)
-		##  img = drawCube(img, aruco_list, i[0], cam, dist)
-		##  img = drawCylinder(img, aruco_list, i[0], cam, dist)
-	cv2.imshow("img", img)
-	cv2.waitKey(0)
-	cv2.destroyAllWindows()
+if __name__ == "__main__":
+    cam, dist = getCameraMatrix()
+    img = cv2.imread("../TestCases/image_1.jpg")
+    aruco_list = detect_markers(img, cam, dist)
+    for i in aruco_list:
+        img = drawAxis(img, aruco_list, i[0], cam, dist)
+        ##  img = drawCube(img, aruco_list, i[0], cam, dist)
+        ##  img = drawCylinder(img, aruco_list, i[0], cam, dist)
+    cv2.imshow("img", img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
