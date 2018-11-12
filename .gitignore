@@ -1,0 +1,6 @@
+# ignore setup
+*.exe
+*.whl
+
+# ignore legal docs
+Legal\ Documents/
