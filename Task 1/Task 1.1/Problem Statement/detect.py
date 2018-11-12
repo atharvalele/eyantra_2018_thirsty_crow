@@ -83,10 +83,21 @@ Purpose: This function takes the image in form of a numpy array, camera_matrix a
 def detect_markers(img, camera_matrix, dist_coeff):
 	markerLength = 100
 	aruco_list = []
-	######################## INSERT CODE HERE ########################
 
+	######################## INSERT CODE HERE ########################
+	gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+	aruco_dict = aruco.Dictionary_get(aruco.DICT_5X5_250)
+	parameters = aruco.DetectorParameters_create()
+	corners, ids, _ = aruco.detectMarkers(gray, aruco_dict,
+						parameters=parameters)
 	
+	with np.load("../../Camera.npz") as X:
+		camera_matrix, dist_coeff, _, _ = [X[i] for i in ('mtx', 'dist', 'rvecs', 'tvecs')]
+		rvec, tvec, obj = aruco.estimatePoseSingleMarkers(corners, markerLength, camera_matrix, dist_coeff)
+	
+	cv2.imwrite('markerimg.jpg', aruco.drawDetectedMarkers(img ,corners, ids, (0,255,0)))
 	##################################################################
+	
 	return aruco_list
 
 """
@@ -166,7 +177,7 @@ the ArUco markers detected in the images.
 
 if __name__=="__main__":
 	cam, dist = getCameraMatrix()
-	img = cv2.imread("..\\TestCases\\image_1.jpg")
+	img = cv2.imread("../TestCases/image_1.jpg")
 	aruco_list = detect_markers(img, cam, dist)
 	for i in aruco_list:
 		img = drawAxis(img, aruco_list, i[0], cam, dist)
