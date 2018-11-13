@@ -105,7 +105,16 @@ def detect_markers(img, camera_matrix, dist_coeff):
                                            for i in ('mtx', 'dist', 'rvecs', 'tvecs')]
         rvec, tvec, obj = aruco.estimatePoseSingleMarkers(
             corners, markerLength, camera_matrix, dist_coeff)
-
+    ctr = [corners[0][0][i] for i in range(0, 4)]
+    print(corners)
+    print(ctr)
+    img = cv2.line(img, (ctr[0][0], ctr[0][1]), (ctr[2][0], ctr[2][1]), (255,255,255), 2)
+    img = cv2.line(img, (ctr[1][0], ctr[1][1]), (ctr[3][0], ctr[3][1]), (255,255,255), 2)
+    # for i in range(0, 4):
+    #    img = cv2.circle(img, (ctr[i][0], ctr[i][1]), 10, (255,255,255), 0)
+    # # img = cv2.circle(img, (ctr[0], ctr[1]), 10, (255,255,255), 0)
+    # img = cv2.circle(img, (ctr[0], ctr[1]), 10, (255,255,255), 0)
+    
     cv2.imwrite('markerimg.jpg', aruco.drawDetectedMarkers(
         img, corners, ids, (0, 255, 0)))
     ##################################################################
@@ -200,8 +209,9 @@ the ArUco markers detected in the images.
 
 if __name__ == "__main__":
     cam, dist = getCameraMatrix()
-    img = cv2.imread("../TestCases/image_1.jpg")
+    img = cv2.imread("../TestCases/image_7.jpg")
     aruco_list = detect_markers(img, cam, dist)
+    print(aruco_list)
     for i in aruco_list:
         img = drawAxis(img, aruco_list, i[0], cam, dist)
         ##  img = drawCube(img, aruco_list, i[0], cam, dist)
