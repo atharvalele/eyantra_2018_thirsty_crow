@@ -2,6 +2,7 @@ import numpy as np
 import cv2
 import cv2.aruco as aruco
 import math
+
 """
 **************************************************************************
 *                  E-Yantra Robotics Competition
@@ -100,21 +101,22 @@ def detect_markers(img, camera_matrix, dist_coeff):
     corners, ids, _ = aruco.detectMarkers(gray, aruco_dict,
                                           parameters=parameters)
 
-    with np.load("../../Camera.npz") as X:
+    with np.load("System.npz") as X:
         camera_matrix, dist_coeff, _, _ = [X[i]
                                            for i in ('mtx', 'dist', 'rvecs', 'tvecs')]
         rvec, tvec, obj = aruco.estimatePoseSingleMarkers(
             corners, markerLength, camera_matrix, dist_coeff)
-    ctr = [corners[0][0][i] for i in range(0, 4)]
-    print(corners)
-    print(ctr)
-    img = cv2.line(img, (ctr[0][0], ctr[0][1]), (ctr[2][0], ctr[2][1]), (255,255,255), 2)
-    img = cv2.line(img, (ctr[1][0], ctr[1][1]), (ctr[3][0], ctr[3][1]), (255,255,255), 2)
-    # for i in range(0, 4):
-    #    img = cv2.circle(img, (ctr[i][0], ctr[i][1]), 10, (255,255,255), 0)
-    # # img = cv2.circle(img, (ctr[0], ctr[1]), 10, (255,255,255), 0)
-    # img = cv2.circle(img, (ctr[0], ctr[1]), 10, (255,255,255), 0)
-    
+
+    for i in range(0, ids.size):
+        # Calculation of center using average of the four corners
+        x = (corners[i - 1][0][0][0] + corners[i - 1][0][1][0] + corners[i - 1][0][2][0] + corners[i - 1][0][3][0]) / 4
+        y = (corners[i - 1][0][0][1] + corners[i - 1][0][1][1] + corners[i - 1][0][2][1] + corners[i - 1][0][3][1]) / 4
+        center = (int(x), int(y))
+
+        # Populating the aruco marker list
+        marker = (ids[i][0], center, rvec[i], tvec[i])
+        aruco_list.append(marker)
+
     cv2.imwrite('markerimg.jpg', aruco.drawDetectedMarkers(
         img, corners, ids, (0, 255, 0)))
     ##################################################################
@@ -137,7 +139,7 @@ def drawAxis(img, aruco_list, aruco_id, camera_matrix, dist_coeff):
         if aruco_id == x[0]:
             rvec, tvec = x[2], x[3]
     markerLength = 100
-    m = markerLength/2
+    m = markerLength / 2
     pts = np.float32([[-m, m, 0], [m, m, 0], [-m, -m, 0], [-m, m, m]])
     pt_dict = {}
     imgpts, _ = cv2.projectPoints(pts, rvec, tvec, camera_matrix, dist_coeff)
@@ -169,7 +171,7 @@ def drawCube(img, ar_list, ar_id, camera_matrix, dist_coeff):
         if ar_id == x[0]:
             rvec, tvec = x[2], x[3]
     markerLength = 100
-    m = markerLength/2
+    m = markerLength / 2
     ######################## INSERT CODE HERE ########################
 
     ##################################################################
@@ -191,8 +193,8 @@ def drawCylinder(img, ar_list, ar_id, camera_matrix, dist_coeff):
         if ar_id == x[0]:
             rvec, tvec = x[2], x[3]
     markerLength = 100
-    radius = markerLength/2
-    height = markerLength*1.5
+    radius = markerLength / 2
+    height = markerLength * 1.5
     ######################## INSERT CODE HERE ########################
 
     ##################################################################
@@ -205,7 +207,6 @@ This main code reads images from the test cases folder and converts them into
 numpy array format using cv2.imread. Then it draws axis, cubes or cylinders on
 the ArUco markers detected in the images.
 """
-
 
 if __name__ == "__main__":
     cam, dist = getCameraMatrix()
