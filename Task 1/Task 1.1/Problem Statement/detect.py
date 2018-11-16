@@ -240,7 +240,7 @@ if __name__ == "__main__":
     print(aruco_list)
     for i in aruco_list:
         img = drawAxis(img, aruco_list, i[0], cam, dist)
-        ##  img = drawCube(img, aruco_list, i[0], cam, dist)
+        img = drawCube(img, aruco_list, i[0], cam, dist)
         ##  img = drawCylinder(img, aruco_list, i[0], cam, dist)
     cv2.imshow("img", img)
     cv2.waitKey(0)
