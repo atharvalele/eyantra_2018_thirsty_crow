@@ -215,7 +215,19 @@ def drawCylinder(img, ar_list, ar_id, camera_matrix, dist_coeff):
     radius = markerLength / 2
     height = markerLength * 1.5
     ######################## INSERT CODE HERE ########################
+    # counter-clockwise edges
+    pts = np.float32([[0, -radius, 0], [radius, 0, 0], [0, radius, 0], [-radius, 0, 0]])
+    pt_dict = {}
+    imgpts, _ = cv2.projectPoints(pts, rvec, tvec, camera_matrix, dist_coeff)
+    for i in range(len(pts)):
+        pt_dict[tuple(pts[i])] = tuple(imgpts[i].ravel())
 
+    baseCirclePoints = tuple([pt_dict[tuple(pts[i])] for i in range(0, 4)])
+
+    # change the baseCirclePoints tuple to the format expected by drawContours()
+    ctr = np.array(baseCirclePoints).reshape((-1, 1, 2)).astype(np.int32)
+
+    cv2.drawContours(img, [ctr], -1, (0, 0, 255), 3)
     ##################################################################
     return img
 
@@ -229,13 +241,13 @@ the ArUco markers detected in the images.
 
 if __name__ == "__main__":
     cam, dist = getCameraMatrix()
-    img = cv2.imread("../TestCases/image_7.jpg")
+    img = cv2.imread("../TestCases/image_1.jpg")
     aruco_list = detect_markers(img, cam, dist)
     # print(aruco_list)
     for i in aruco_list:
         # img = drawAxis(img, aruco_list, i[0], cam, dist)
-        img = drawCube(img, aruco_list, i[0], cam, dist)
-        ##  img = drawCylinder(img, aruco_list, i[0], cam, dist)
+        # img = drawCube(img, aruco_list, i[0], cam, dist)
+        img = drawCylinder(img, aruco_list, i[0], cam, dist)
     cv2.imshow("img", img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
