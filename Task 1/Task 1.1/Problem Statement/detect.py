@@ -173,32 +173,26 @@ def drawCube(img, ar_list, ar_id, camera_matrix, dist_coeff):
     markerLength = 100
     m = markerLength / 2
     ######################## INSERT CODE HERE ########################
-    pts=np.float32([[-m,m,0],[m,m,0],[-m,-m,0],[-m,m,m],[m,m,m],[-m,-m,m],[m,-m,0],[m,-m,m]])
+    pts = np.float32([[-m, m, 0], [m, m, 0], [m, -m, 0], [-m, -m, 0], [-m, m, 2 * m], [m, m, 2 * m], [m, -m, 2 * m],
+                      [-m, -m, 2 * m]])
     pt_dict = {}
-    imgpts, _ = cv2.projectPoints(pts,rvec,tvec, camera_matrix, dist_coeff)
+    imgpts, _ = cv2.projectPoints(pts, rvec, tvec, camera_matrix, dist_coeff)
     for i in range(len(pts)):
         pt_dict[tuple(pts[i])] = tuple(imgpts[i].ravel())
-    src = pt_dict[tuple(pts[0])]
-    dst1 = pt_dict[tuple(pts[1])]
-    dst2 = pt_dict[tuple(pts[2])]
-    dst3 = pt_dict[tuple(pts[3])]
-    dst4 = pt_dict[tuple(pts[4])]
-    dst5 = pt_dict[tuple(pts[5])]
-    dst6 = pt_dict[tuple(pts[6])]
-    dst7 = pt_dict[tuple(pts[7])]
 
-    img = cv2.line(img, src, dst1, (0, 255, 0), 4)
-    img = cv2.line(img, src, dst2, (255, 0, 0), 4)
-    img = cv2.line(img, src, dst3, (0, 0, 255), 4)
-    img = cv2.line(img, dst2, dst5, (0, 0, 255), 4)
-    img = cv2.line(img, dst5, dst3, (0, 0, 255), 4)
-    img = cv2.line(img, dst4, dst3, (0, 0, 255), 4)
-    img = cv2.line(img, dst4, dst7, (0, 0, 255), 4)
-    img = cv2.line(img, dst7, dst5, (0, 0, 255), 4)
-    img = cv2.line(img, dst7, dst6, (0, 0, 255), 4)
-    img = cv2.line(img, dst6, dst2, (0, 0, 255), 4)
-    img = cv2.line(img, dst6, dst1, (0, 0, 255), 4)
-    img = cv2.line(img, dst1, dst4, (0, 0, 255), 4)
+    cubePoints = tuple([pt_dict[tuple(pts[i])] for i in range(0, 8)])
+
+    for i in range(0, 5):
+        # This will plot partial squares on the z axis and above it
+        if i < 3:
+            img = cv2.line(img, cubePoints[i], cubePoints[i + 1], (0, 0, 255), 4)
+            img = cv2.line(img, cubePoints[i + 4], cubePoints[i + 5], (0, 0, 255), 4)
+        # This finishes the squares
+        if i == 0 or i == 4:
+            img = cv2.line(img, cubePoints[i], cubePoints[i + 3], (0, 0, 255), 4)
+        # This will connect the top and bottom squares
+        if i != 4:
+            img = cv2.line(img, cubePoints[i], cubePoints[i + 4], (0, 0, 255), 4)
     ##################################################################
     return img
 
@@ -237,9 +231,9 @@ if __name__ == "__main__":
     cam, dist = getCameraMatrix()
     img = cv2.imread("../TestCases/image_7.jpg")
     aruco_list = detect_markers(img, cam, dist)
-    print(aruco_list)
+    # print(aruco_list)
     for i in aruco_list:
-        img = drawAxis(img, aruco_list, i[0], cam, dist)
+        # img = drawAxis(img, aruco_list, i[0], cam, dist)
         img = drawCube(img, aruco_list, i[0], cam, dist)
         ##  img = drawCylinder(img, aruco_list, i[0], cam, dist)
     cv2.imshow("img", img)
