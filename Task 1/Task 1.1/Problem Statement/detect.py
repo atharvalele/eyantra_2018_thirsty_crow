@@ -215,19 +215,40 @@ def drawCylinder(img, ar_list, ar_id, camera_matrix, dist_coeff):
     radius = markerLength / 2
     height = markerLength * 1.5
     ######################## INSERT CODE HERE ########################
-    # counter-clockwise edges
-    pts = np.float32([[0, -radius, 0], [radius, 0, 0], [0, radius, 0], [-radius, 0, 0]])
-    pt_dict = {}
-    imgpts, _ = cv2.projectPoints(pts, rvec, tvec, camera_matrix, dist_coeff)
-    for i in range(len(pts)):
-        pt_dict[tuple(pts[i])] = tuple(imgpts[i].ravel())
+    # base points
+    ptsBase = []
+    for i in range(0, 24):
+        x = radius * cos(i * 15)
+        y = radius * sin(i * 15)
+        ptsBase.append([x, y, 0])
+    ptsBase = np.float32(ptsBase)
+    pt_dict_base = {}
+    imgptsBase, _ = cv2.projectPoints(ptsBase, rvec, tvec, camera_matrix, dist_coeff)
+    for i in range(len(ptsBase)):
+        pt_dict_base[tuple(ptsBase[i])] = tuple(imgptsBase[i].ravel())
 
-    baseCirclePoints = tuple([pt_dict[tuple(pts[i])] for i in range(0, 4)])
+    baseCirclePoints = tuple([pt_dict_base[tuple(ptsBase[i])] for i in range(0, len(ptsBase))])
 
-    # change the baseCirclePoints tuple to the format expected by drawContours()
-    ctr = np.array(baseCirclePoints).reshape((-1, 1, 2)).astype(np.int32)
+    # top circle points
+    ptsTop = []
+    for i in range(0, 24):
+        x = radius * cos(i * 15)
+        y = radius * sin(i * 15)
+        ptsTop.append([x, y, height])
+    ptsTop = np.float32(ptsTop)
+    pt_dict_top = {}
+    imgptsTop, _ = cv2.projectPoints(ptsTop, rvec, tvec, camera_matrix, dist_coeff)
+    for i in range(len(ptsTop)):
+        pt_dict_top[tuple(ptsTop[i])] = tuple(imgptsTop[i].ravel())
 
-    cv2.drawContours(img, [ctr], -1, (0, 0, 255), 3)
+    topCirclePoints = tuple([pt_dict_top[tuple(ptsTop[i])] for i in range(0, len(ptsTop))])
+
+    # change the CirclePoints tuple to the format expected by drawContours()
+    ctrBase = np.array(baseCirclePoints).reshape((-1, 1, 2)).astype(np.int32)
+    ctrTop = np.array(topCirclePoints).reshape((-1, 1, 2)).astype(np.int32)
+
+    cv2.drawContours(img, [ctrBase], -1, (255, 0, 0), 2)
+    cv2.drawContours(img, [ctrTop], -1, (255, 0, 0), 2)
     ##################################################################
     return img
 
