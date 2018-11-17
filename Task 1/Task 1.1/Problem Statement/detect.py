@@ -116,9 +116,6 @@ def detect_markers(img, camera_matrix, dist_coeff):
         # Populating the aruco marker list
         marker = (ids[i][0], center, np.array([rvec[i]]), np.array([tvec[i]]))
         aruco_list.append(marker)
-
-    cv2.imwrite('markerimg.jpg', aruco.drawDetectedMarkers(
-        img, corners, ids, (0, 255, 0)))
     ##################################################################
 
     return aruco_list
