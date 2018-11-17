@@ -246,6 +246,26 @@ def drawCylinder(img, ar_list, ar_id, camera_matrix, dist_coeff):
 
     cv2.drawContours(img, [ctrBase], -1, (255, 0, 0), 2)
     cv2.drawContours(img, [ctrTop], -1, (255, 0, 0), 2)
+
+    # Drawing the lines
+    pt_dict_ctr_base = {}
+    pt_ctr_base = np.float32([[0, 0, 0]])
+    imgpts_ctrBase, _ = cv2.projectPoints(pt_ctr_base, rvec, tvec, camera_matrix, dist_coeff)
+    pt_dict_ctr_base[tuple(pt_ctr_base[0])] = tuple(imgpts_ctrBase[0].ravel())
+    ctr_base = pt_dict_ctr_base[tuple(pt_ctr_base[0])]
+
+    pt_dict_ctr_top = {}
+    pt_ctr_top = np.float32([[0, 0, height]])
+    imgpts_ctrTop, _ = cv2.projectPoints(pt_ctr_top, rvec, tvec, camera_matrix, dist_coeff)
+    pt_dict_ctr_top[tuple(pt_ctr_top[0])] = tuple(imgpts_ctrTop[0].ravel())
+    ctr_top = pt_dict_ctr_top[tuple(pt_ctr_top[0])]
+
+    for i in range(0, 12):
+        src = pt_dict_base[tuple(ptsBase[2 * i])]
+        dst = pt_dict_top[tuple(ptsTop[2 * i])]
+        img = cv2.line(img, src, dst, (255, 0, 0), 2)
+        img = cv2.line(img, ctr_base, src, (255, 0, 0), 2)
+        img = cv2.line(img, ctr_top, dst, (255, 0, 0), 2)
     ##################################################################
     return img
 
@@ -261,10 +281,9 @@ if __name__ == "__main__":
     cam, dist = getCameraMatrix()
     img = cv2.imread("../TestCases/image_1.jpg")
     aruco_list = detect_markers(img, cam, dist)
-    # print(aruco_list)
     for i in aruco_list:
-        # img = drawAxis(img, aruco_list, i[0], cam, dist)
-        # img = drawCube(img, aruco_list, i[0], cam, dist)
+        img = drawAxis(img, aruco_list, i[0], cam, dist)
+        img = drawCube(img, aruco_list, i[0], cam, dist)
         img = drawCylinder(img, aruco_list, i[0], cam, dist)
     cv2.imshow("img", img)
     cv2.waitKey(0)
