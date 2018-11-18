@@ -39,16 +39,15 @@ from OpenGL.GLUT import *
 from PIL import Image
 import pygame
 
-
 texture_object = None
 texture_background = None
 camera_matrix = None
 dist_coeff = None
 cap = cv2.VideoCapture(0)
-INVERSE_MATRIX = np.array([[ 1.0, 1.0, 1.0, 1.0],
-                           [-1.0,-1.0,-1.0,-1.0],
-                           [-1.0,-1.0,-1.0,-1.0],
-                           [ 1.0, 1.0, 1.0, 1.0]])
+INVERSE_MATRIX = np.array([[1.0, 1.0, 1.0, 1.0],
+                           [-1.0, -1.0, -1.0, -1.0],
+                           [-1.0, -1.0, -1.0, -1.0],
+                           [1.0, 1.0, 1.0, 1.0]])
 
 ################## Define Utility Functions Here #######################
 """
@@ -58,11 +57,12 @@ Output: camera_matrix, dist_coeff
 Purpose: Loads the camera calibration file provided and returns the camera and
          distortion matrix saved in the calibration file.
 """
-def getCameraMatrix():
-        global camera_matrix, dist_coeff
-        with np.load('System.npz') as X:
-                camera_matrix, dist_coeff, _, _ = [X[i] for i in ('mtx','dist','rvecs','tvecs')]
 
+
+def getCameraMatrix():
+    global camera_matrix, dist_coeff
+    with np.load('System.npz') as X:
+        camera_matrix, dist_coeff, _, _ = [X[i] for i in ('mtx', 'dist', 'rvecs', 'tvecs')]
 
 
 ########################################################################
@@ -74,50 +74,60 @@ Input: None
 Output: None
 Purpose: Initialises OpenGL window and callback functions. Then starts the event
          processing loop.
-"""        
+"""
+
+
 def main():
-        glutInit()
-        getCameraMatrix()
-        glutInitWindowSize(640, 480)
-        glutInitWindowPosition(625, 100)
-        glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE)
-        window_id = glutCreateWindow("OpenGL")
-        init_gl()
-        glutDisplayFunc(drawGLScene)
-        glutIdleFunc(drawGLScene)
-        glutReshapeFunc(resize)
-        glutMainLoop()
+    glutInit()
+    getCameraMatrix()
+    glutInitWindowSize(640, 480)
+    glutInitWindowPosition(625, 100)
+    glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE)
+    window_id = glutCreateWindow("OpenGL")
+    init_gl()
+    glutDisplayFunc(drawGLScene)
+    glutIdleFunc(drawGLScene)
+    glutReshapeFunc(resize)
+    glutMainLoop()
+
 
 """
 Function Name : init_gl()
 Input: None
 Output: None
 Purpose: Initialises various parameters related to OpenGL scene.
-"""  
+"""
+
+
 def init_gl():
-        global texture_object, texture_background
-        glClearColor(0.0, 0.0, 0.0, 0.0)
-        glClearDepth(1.0) 
-        glDepthFunc(GL_LESS)
-        glEnable(GL_DEPTH_TEST)
-        glShadeModel(GL_SMOOTH)   
-        glMatrixMode(GL_MODELVIEW)
-        glEnable(GL_DEPTH_TEST)
-        glEnable(GL_LIGHTING)
-        glEnable(GL_LIGHT0)
-        texture_background = glGenTextures(1)
-        texture_object = glGenTextures(1)
+    global texture_object, texture_background
+    glClearColor(0.0, 0.0, 0.0, 0.0)
+    glClearDepth(1.0)
+    glDepthFunc(GL_LESS)
+    glEnable(GL_DEPTH_TEST)
+    glShadeModel(GL_SMOOTH)
+    glMatrixMode(GL_MODELVIEW)
+    glEnable(GL_DEPTH_TEST)
+    glEnable(GL_LIGHTING)
+    glEnable(GL_LIGHT0)
+    texture_background = glGenTextures(1)
+    texture_object = glGenTextures(1)
+
+
 """
 Function Name : resize()
 Input: None
 Output: None
 Purpose: Initialises the projection matrix of OpenGL scene
 """
-def resize(w,h):
-        ratio = 1.0* w / h
-        glMatrixMode(GL_PROJECTION)
-        glViewport(0,0,w,h)
-        gluPerspective(45, ratio, 0.1, 100.0)
+
+
+def resize(w, h):
+    ratio = 1.0 * w / h
+    glMatrixMode(GL_PROJECTION)
+    glViewport(0, 0, w, h)
+    gluPerspective(45, ratio, 0.1, 100.0)
+
 
 """
 Function Name : drawGLScene()
@@ -129,29 +139,32 @@ Purpose: It is the main callback function which is called again and
          detected in the webcam frame and 3D model is overlayed on the marker
          by calling the overlay() function.
 """
+
+
 def drawGLScene():
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-        ar_list = []
-        ret, frame = cap.read()
-        if ret == True:
-##                draw_background(frame)
-                glMatrixMode(GL_MODELVIEW)
-                glLoadIdentity()
-                ar_list = detect_markers(frame)
-##                for i in ar_list:
-##                        if i[0] == 8:
-##                                overlay(frame, ar_list, i[0],"texture_1.png")
-##                        if i[0] == 2:
-##                                overlay(frame, ar_list, i[0],"texture_2.png")
-##                        if i[0] == 7:
-##                                overlay(frame, ar_list, i[0],"texture_3.png")
-##                        if i[0] == 6:
-##                                overlay(frame, ar_list, i[0],"texture_4.png")
-                                
-                cv2.imshow('frame', frame)
-                cv2.waitKey(1)
-        glutSwapBuffers()
-        
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    ar_list = []
+    ret, frame = cap.read()
+    if ret == True:
+        ##                draw_background(frame)
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity()
+        ar_list = detect_markers(frame)
+        ##                for i in ar_list:
+        ##                        if i[0] == 8:
+        ##                                overlay(frame, ar_list, i[0],"texture_1.png")
+        ##                        if i[0] == 2:
+        ##                                overlay(frame, ar_list, i[0],"texture_2.png")
+        ##                        if i[0] == 7:
+        ##                                overlay(frame, ar_list, i[0],"texture_3.png")
+        ##                        if i[0] == 6:
+        ##                                overlay(frame, ar_list, i[0],"texture_4.png")
+
+        cv2.imshow('frame', frame)
+        cv2.waitKey(1)
+    glutSwapBuffers()
+
+
 ########################################################################
 
 ######################## Aruco Detection Function ######################
@@ -166,12 +179,16 @@ Purpose: This function takes the image in form of a numpy array, camera_matrix a
          and tvec are calculated and stored in a list in a prescribed format. The list
          is returned as output for the function
 """
+
+
 def detect_markers(img):
-        aruco_list = []
-        ################################################################
-        #################### Same code as Task 1.1 #####################
-        ################################################################
-        return aruco_list
+    aruco_list = []
+    ################################################################
+    #################### Same code as Task 1.1 #####################
+    ################################################################
+    return aruco_list
+
+
 ########################################################################
 
 
@@ -184,9 +201,11 @@ Output: None
 Purpose: Takes image as input and converts it into an OpenGL texture. That
          OpenGL texture is then set as background of the OpenGL scene
 """
+
+
 def draw_background(img):
-        
-        return None
+    return None
+
 
 """
 Function Name : init_object_texture()
@@ -196,10 +215,13 @@ Purpose: Takes the filepath of a texture file as input and converts it into Open
          texture. The texture is then applied to the next object rendered in the OpenGL
          scene.
 """
+
+
 def init_object_texture(image_filepath):
-        tex = cv2.imread(image_filepath)
-        
-        return None
+    tex = cv2.imread(image_filepath)
+
+    return None
+
 
 """
 Function Name : overlay()
@@ -213,26 +235,25 @@ Purpose: Receives the ArUco information as input and overlays the 3D Model of a 
          Parts of this code are already completed, you just need to fill in the blanks. You may
          however add your own code in this function.
 """
-def overlay(img, ar_list, ar_id, texture_file):
-        for x in ar_list:
-                if ar_id == x[0]:
-                        centre, rvec, tvec = x[1], x[2], x[3]
-        rmtx = cv2.Rodrigues(rvec)[0]
-        view_matrix = 
-        view_matrix = view_matrix * INVERSE_MATRIX
-        view_matrix = np.transpose(view_matrix)
 
-        
-        init_object_texture(texture_file)
-        glPushMatrix()
-        glLoadMatrixd(view_matrix)
-        glutSolidTeapot(0.5)
-        glPopMatrix()
+
+def overlay(img, ar_list, ar_id, texture_file):
+    for x in ar_list:
+        if ar_id == x[0]:
+            centre, rvec, tvec = x[1], x[2], x[3]
+    rmtx = cv2.Rodrigues(rvec)[0]
+    view_matrix =
+    view_matrix = view_matrix * INVERSE_MATRIX
+    view_matrix = np.transpose(view_matrix)
+
+    init_object_texture(texture_file)
+    glPushMatrix()
+    glLoadMatrixd(view_matrix)
+    glutSolidTeapot(0.5)
+    glPopMatrix()
 
 
 ########################################################################
 
 if __name__ == "__main__":
-        main()
-
-        
+    main()
