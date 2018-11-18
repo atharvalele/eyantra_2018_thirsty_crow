@@ -185,6 +185,28 @@ def detect_markers(img):
     aruco_list = []
     ################################################################
     #################### Same code as Task 1.1 #####################
+    markerLength = 100
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    aruco_dict = aruco.Dictionary_get(aruco.DICT_5X5_250)
+    parameters = aruco.DetectorParameters_create()
+    corners, ids, _ = aruco.detectMarkers(gray, aruco_dict,
+                                          parameters=parameters)
+
+    with np.load("..\\..\\Camera.npz") as X:
+        camera_matrix, dist_coeff, _, _ = [X[i]
+                                           for i in ('mtx', 'dist', 'rvecs', 'tvecs')]
+        rvec, tvec, obj = aruco.estimatePoseSingleMarkers(
+            corners, markerLength, camera_matrix, dist_coeff)
+
+    for i in range(0, ids.size):
+        # Calculation of center using average of the four corners
+        x = (corners[i - 1][0][0][0] + corners[i - 1][0][1][0] + corners[i - 1][0][2][0] + corners[i - 1][0][3][0]) / 4
+        y = (corners[i - 1][0][0][1] + corners[i - 1][0][1][1] + corners[i - 1][0][2][1] + corners[i - 1][0][3][1]) / 4
+        center = (int(x), int(y))
+
+        # Populating the aruco marker list
+        marker = (ids[i][0], center, np.array([rvec[i]]), np.array([tvec[i]]))
+        aruco_list.append(marker)
     ################################################################
     return aruco_list
 
@@ -242,7 +264,7 @@ def overlay(img, ar_list, ar_id, texture_file):
         if ar_id == x[0]:
             centre, rvec, tvec = x[1], x[2], x[3]
     rmtx = cv2.Rodrigues(rvec)[0]
-    view_matrix =
+    # view_matrix =
     view_matrix = view_matrix * INVERSE_MATRIX
     view_matrix = np.transpose(view_matrix)
 
@@ -256,4 +278,7 @@ def overlay(img, ar_list, ar_id, texture_file):
 ########################################################################
 
 if __name__ == "__main__":
-    main()
+    # main()
+    img = cv2.imread("..\\..\\Task 1.1\\TestCases\\image_1.jpg")
+    aruco_list = detect_markers(img)
+    print(aruco_list)
