@@ -198,15 +198,18 @@ def detect_markers(img):
         rvec, tvec, obj = aruco.estimatePoseSingleMarkers(
             corners, markerLength, camera_matrix, dist_coeff)
 
-    for i in range(0, ids.size):
-        # Calculation of center using average of the four corners
-        x = (corners[i - 1][0][0][0] + corners[i - 1][0][1][0] + corners[i - 1][0][2][0] + corners[i - 1][0][3][0]) / 4
-        y = (corners[i - 1][0][0][1] + corners[i - 1][0][1][1] + corners[i - 1][0][2][1] + corners[i - 1][0][3][1]) / 4
-        center = (int(x), int(y))
+    try:
+        for i in range(0, ids.size):
+            # Calculation of center using average of the four corners
+            x = (corners[i - 1][0][0][0] + corners[i - 1][0][1][0] + corners[i - 1][0][2][0] + corners[i - 1][0][3][0]) / 4
+            y = (corners[i - 1][0][0][1] + corners[i - 1][0][1][1] + corners[i - 1][0][2][1] + corners[i - 1][0][3][1]) / 4
+            center = (int(x), int(y))
 
-        # Populating the aruco marker list
-        marker = (ids[i][0], center, np.array([rvec[i]]), np.array([tvec[i]]))
-        aruco_list.append(marker)
+            # Populating the aruco marker list
+            marker = (ids[i][0], center, np.array([rvec[i]]), np.array([tvec[i]]))
+            aruco_list.append(marker)
+    except:
+        print("No aruco markers in view")
     ################################################################
     return aruco_list
 
