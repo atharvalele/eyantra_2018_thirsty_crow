@@ -146,24 +146,23 @@ def drawGLScene():
     ar_list = []
     ret, frame = cap.read()
     if ret == True:
-        ##                draw_background(frame)
-        glMatrixMode(GL_MODELVIEW)
-        glLoadIdentity()
-        ar_list = detect_markers(frame)
-        ##                for i in ar_list:
-        ##                        if i[0] == 8:
-        ##                                overlay(frame, ar_list, i[0],"texture_1.png")
-        ##                        if i[0] == 2:
-        ##                                overlay(frame, ar_list, i[0],"texture_2.png")
-        ##                        if i[0] == 7:
-        ##                                overlay(frame, ar_list, i[0],"texture_3.png")
-        ##                        if i[0] == 6:
-        ##                                overlay(frame, ar_list, i[0],"texture_4.png")
+        draw_background(frame)
+    glMatrixMode(GL_MODELVIEW)
+    glLoadIdentity()
+    ar_list = detect_markers(frame)
+    for i in ar_list:
+        if i[0] == 8:
+            overlay(frame, ar_list, i[0], "texture_1.png")
+        if i[0] == 2:
+            overlay(frame, ar_list, i[0], "texture_2.png")
+        if i[0] == 7:
+            overlay(frame, ar_list, i[0], "texture_3.png")
+        if i[0] == 6:
+            overlay(frame, ar_list, i[0], "texture_4.png")
 
-        cv2.imshow('frame', frame)
-        cv2.waitKey(1)
+    cv2.imshow('frame', frame)
+    cv2.waitKey(1)
     glutSwapBuffers()
-
 
 ########################################################################
 
@@ -201,8 +200,10 @@ def detect_markers(img):
     try:
         for i in range(0, ids.size):
             # Calculation of center using average of the four corners
-            x = (corners[i - 1][0][0][0] + corners[i - 1][0][1][0] + corners[i - 1][0][2][0] + corners[i - 1][0][3][0]) / 4
-            y = (corners[i - 1][0][0][1] + corners[i - 1][0][1][1] + corners[i - 1][0][2][1] + corners[i - 1][0][3][1]) / 4
+            x = (corners[i - 1][0][0][0] + corners[i - 1][0][1][0] + corners[i - 1][0][2][0] + corners[i - 1][0][3][
+                0]) / 4
+            y = (corners[i - 1][0][0][1] + corners[i - 1][0][1][1] + corners[i - 1][0][2][1] + corners[i - 1][0][3][
+                1]) / 4
             center = (int(x), int(y))
 
             # Populating the aruco marker list
