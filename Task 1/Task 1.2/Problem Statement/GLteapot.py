@@ -230,7 +230,33 @@ Purpose: Takes image as input and converts it into an OpenGL texture. That
 
 
 def draw_background(img):
-    return None
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    glLoadIdentity()
+    # convert image to OpenGL texture format
+    bg_image = Image.fromarray(img)
+    ix = bg_image.size[0]
+    iy = bg_image.size[1]
+    bg_image = bg_image.tobytes("raw", "BGRX", 0, -1)
+    glEnable(GL_TEXTURE_2D)
+    # create background texture
+    glBindTexture(GL_TEXTURE_2D, texture_background)
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, ix, iy, 0, GL_RGBA, GL_UNSIGNED_BYTE, bg_image)
+    # draw background
+    glPushMatrix()
+    glBegin(GL_QUADS)
+    glTexCoord2d(0.0, 0.0)
+    glVertex2d(-1.0, -1.0)
+    glTexCoord2d(1.0, 0.0)
+    glVertex2d(+1.0, -1.0)
+    glTexCoord2d(1.0, 1.0)
+    glVertex2d(+1.0, +1.0)
+    glTexCoord2d(0.0, 1.0)
+    glVertex2d(-1.0, +1.0)
+    glEnd()
+    # draw_background(bg_image)
+    glPopMatrix()
 
 
 """
