@@ -158,20 +158,13 @@ def init_object_texture(image_filepath):
     ix = tex_image.size[0]
     iy = tex_image.size[1]
     tex_image = tex_image.tobytes("raw", "BGRX", 0, -1)
-    # create background texture
+    # create object texture
     glBindTexture(GL_TEXTURE_2D, texture_object)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-    glTexImage2D(GL_TEXTURE_2D, 0, 3, ix, iy, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex_image)
-    # glPushMatrix()
-    # glRotatef(0, 0, 0, 1)
-    # glBegin(GL_QUADS)
-    # glEnd()
-    # # draw_background(bg_image)
-    # glPopMatrix()
-    # glTranslatef(0.0, 0.0, -1.0)
+    glTexImage2D(GL_TEXTURE_2D, 1, 3, ix, iy, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex_image)
     return None
 
 def overlay(img, ar_list, ar_id, texture_file):
@@ -179,17 +172,19 @@ def overlay(img, ar_list, ar_id, texture_file):
         if ar_id == x[0]:
             centre, rvec, tvec = x[1], x[2], x[3]
     rmtx = cv2.Rodrigues(rvec)[0]
-    view_matrix = np.array([[rmtx[0][0], rmtx[0][1], rmtx[0][2], tvec[0][0][0]],
-                            [rmtx[1][0], rmtx[1][1], rmtx[1][2], tvec[0][0][1]],
-                            [rmtx[2][0], rmtx[2][1], rmtx[2][2], tvec[0][0][2]],
+    view_matrix = np.array([[rmtx[0][0], rmtx[0][1], rmtx[0][2], tvec[0][0][0]/400],
+                            [rmtx[1][0], rmtx[1][1], rmtx[1][2], tvec[0][0][1]/400],
+                            [rmtx[2][0], rmtx[2][1], rmtx[2][2], tvec[0][0][2]/400],
                             [0.0, 0.0, 0.0, 1.0]])
     view_matrix = view_matrix * INVERSE_MATRIX
     view_matrix = np.transpose(view_matrix)
+    print(tvec)
+
 
     init_object_texture(texture_file)
     glPushMatrix()
     glLoadMatrixd(view_matrix)
-    glutSolidTeapot(0.5)
+    glutSolidTeapot(0.25)
     glPopMatrix()
 
 if __name__ == "__main__":
