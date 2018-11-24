@@ -125,8 +125,8 @@ def draw_background(image):
     glLoadIdentity()
 
     # convert image to OpenGL texture format
-    bg_image = cv2.flip(image, 1)
-    bg_image = Image.fromarray(bg_image)
+    # bg_image = cv2.flip(image, 1)
+    bg_image = Image.fromarray(image)
     ix = bg_image.size[0]
     iy = bg_image.size[1]
     bg_image = bg_image.tobytes("raw", "BGRX", 0, -1)
@@ -164,7 +164,7 @@ def init_object_texture(image_filepath):
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-    glTexImage2D(GL_TEXTURE_2D, 1, 3, ix, iy, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex_image)
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, ix, iy, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex_image)
     return None
 
 def overlay(img, ar_list, ar_id, texture_file):
@@ -184,7 +184,7 @@ def overlay(img, ar_list, ar_id, texture_file):
     init_object_texture(texture_file)
     glPushMatrix()
     glLoadMatrixd(view_matrix)
-    glutSolidTeapot(0.25)
+    glutSolidTeapot(0.5)
     glPopMatrix()
 
 if __name__ == "__main__":
