@@ -324,7 +324,4 @@ def overlay(img, ar_list, ar_id, texture_file):
 ########################################################################
 
 if __name__ == "__main__":
-    # main()
-    img = cv2.imread("..\\..\\Task 1.1\\TestCases\\image_1.jpg")
-    aruco_list = detect_markers(img)
-    print(aruco_list)
+    main()
