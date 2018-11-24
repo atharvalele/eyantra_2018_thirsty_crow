@@ -164,6 +164,7 @@ def drawGLScene():
     cv2.waitKey(1)
     glutSwapBuffers()
 
+
 ########################################################################
 
 ######################## Aruco Detection Function ######################
@@ -271,6 +272,18 @@ Purpose: Takes the filepath of a texture file as input and converts it into Open
 
 def init_object_texture(image_filepath):
     tex = cv2.imread(image_filepath)
+    tex = Image.fromarray(tex)
+    ix = tex.size[0]
+    iy = tex.size[1]
+    tex = tex.tobytes("raw", "BGRX", 0, -1)
+    # create object texture
+    glEnable(GL_TEXTURE_2D)
+    glBindTexture(GL_TEXTURE_2D, texture_object)
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT)
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT)
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, ix, iy, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex)
 
     return None
 
