@@ -147,21 +147,21 @@ def drawGLScene():
     ret, frame = cap.read()
     if ret == True:
         draw_background(frame)
-    glMatrixMode(GL_MODELVIEW)
-    glLoadIdentity()
-    ar_list = detect_markers(frame)
-    for i in ar_list:
-        if i[0] == 8:
-            overlay(frame, ar_list, i[0], "texture_1.png")
-        if i[0] == 2:
-            overlay(frame, ar_list, i[0], "texture_2.png")
-        if i[0] == 7:
-            overlay(frame, ar_list, i[0], "texture_3.png")
-        if i[0] == 6:
-            overlay(frame, ar_list, i[0], "texture_4.png")
+        glMatrixMode(GL_MODELVIEW)
+        glLoadIdentity()
+        ar_list = detect_markers(frame)
+        for i in ar_list:
+            if i[0] == 8:
+                overlay(frame, ar_list, i[0], "texture_1.png")
+            if i[0] == 2:
+                overlay(frame, ar_list, i[0], "texture_2.png")
+            if i[0] == 7:
+                overlay(frame, ar_list, i[0], "texture_3.png")
+            if i[0] == 6:
+                overlay(frame, ar_list, i[0], "texture_4.png")
 
-    cv2.imshow('frame', frame)
-    cv2.waitKey(1)
+        cv2.imshow('frame', frame)
+        cv2.waitKey(1)
     glutSwapBuffers()
 
 
@@ -308,7 +308,6 @@ def overlay(img, ar_list, ar_id, texture_file):
                             [0.0, 0.0, 0.0, 1.0]])
     view_matrix = view_matrix * INVERSE_MATRIX
     view_matrix = np.transpose(view_matrix)
-
     init_object_texture(texture_file)
     glPushMatrix()
     glLoadMatrixd(view_matrix)
