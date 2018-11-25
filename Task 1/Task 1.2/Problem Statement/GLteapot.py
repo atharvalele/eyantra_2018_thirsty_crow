@@ -61,7 +61,7 @@ Purpose: Loads the camera calibration file provided and returns the camera and
 
 def getCameraMatrix():
     global camera_matrix, dist_coeff
-    with np.load('System.npz') as X:
+    with np.load("..\\..\\Camera.npz") as X:
         camera_matrix, dist_coeff, _, _ = [X[i] for i in ('mtx', 'dist', 'rvecs', 'tvecs')]
 
 
@@ -191,12 +191,7 @@ def detect_markers(img):
     parameters = aruco.DetectorParameters_create()
     corners, ids, _ = aruco.detectMarkers(gray, aruco_dict,
                                           parameters=parameters)
-
-    with np.load("..\\..\\Camera.npz") as X:
-        camera_matrix, dist_coeff, _, _ = [X[i]
-                                           for i in ('mtx', 'dist', 'rvecs', 'tvecs')]
-        rvec, tvec, obj = aruco.estimatePoseSingleMarkers(
-            corners, markerLength, camera_matrix, dist_coeff)
+    rvec, tvec, obj = aruco.estimatePoseSingleMarkers(corners, markerLength, camera_matrix, dist_coeff)
 
     try:
         for i in range(0, ids.size):
