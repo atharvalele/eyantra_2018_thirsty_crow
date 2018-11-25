@@ -122,8 +122,14 @@ def drawGLScene():
 
 def draw_background(image):
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+    # glLoadIdentity()
+    glMatrixMode(GL_PROJECTION)
+    glPushMatrix()
     glLoadIdentity()
-
+    w = glutGet(GLUT_WINDOW_WIDTH)
+    h = glutGet(GLUT_WINDOW_HEIGHT)
+    gluOrtho2D(0, w, h, 0)
+    glMatrixMode(GL_MODELVIEW)
     # convert image to OpenGL texture format
     # bg_image = cv2.flip(image, 1)
     bg_image = Image.fromarray(image)
@@ -150,6 +156,9 @@ def draw_background(image):
     glEnd()
     # draw_background(bg_image)
     glPopMatrix()
+    glMatrixMode(GL_PROJECTION)
+    glPopMatrix()
+    glMatrixMode(GL_MODELVIEW)
 
 def init_object_texture(image_filepath):
     glEnable(GL_TEXTURE_2D)
@@ -186,7 +195,7 @@ def overlay(img, ar_list, ar_id, texture_file):
     init_object_texture(texture_file)
     glPushMatrix()
     glLoadMatrixf(view_matrix)
-    glutSolidTeapot(0.5)
+    glutSolidTeapot(0.25)
     glPopMatrix()
 
 if __name__ == "__main__":
