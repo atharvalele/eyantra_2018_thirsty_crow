@@ -122,17 +122,16 @@ def drawGLScene():
 
 def draw_background(image):
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-    # glLoadIdentity()
     glMatrixMode(GL_PROJECTION)
-    glPushMatrix()
     glLoadIdentity()
-    w = glutGet(GLUT_WINDOW_WIDTH)
-    h = glutGet(GLUT_WINDOW_HEIGHT)
     gluOrtho2D(1, -1, -1, 1)
+    glDisable(GL_DEPTH_TEST)
+    glDisable(GL_LIGHTING)
+    glDepthMask(GL_FALSE)
     glMatrixMode(GL_MODELVIEW)
+    
     glLoadIdentity()
-    # convert image to OpenGL texture format
-    # bg_image = cv2.flip(image, 1)
+    
     bg_image = Image.fromarray(image)
     ix = bg_image.size[0]
     iy = bg_image.size[1]
@@ -157,10 +156,10 @@ def draw_background(image):
     glEnd()
     # draw_background(bg_image)
     glPopMatrix()
-    glMatrixMode(GL_PROJECTION)
-    glPopMatrix()
-    glMatrixMode(GL_MODELVIEW)
-
+    glDepthMask(GL_TRUE)
+    glEnable(GL_DEPTH_TEST)
+    glEnable(GL_LIGHTING)
+    
 def init_object_texture(image_filepath):
     glEnable(GL_TEXTURE_2D)
     tex_image = cv2.imread(image_filepath)
@@ -182,15 +181,15 @@ def overlay(img, ar_list, ar_id, texture_file):
         if ar_id == x[0]:
             centre, rvec, tvec = x[1], x[2], x[3]
     rmtx = cv2.Rodrigues(rvec)[0]
-    view_matrix = np.array([[rmtx[0][0], rmtx[0][1], rmtx[0][2], tvec[0][0][0]/400],
-                            [rmtx[1][0], rmtx[1][1], rmtx[1][2], tvec[0][0][1]/400],
-                            [rmtx[2][0], rmtx[2][1], rmtx[2][2], tvec[0][0][2]/400],
+    view_matrix = np.array([[rmtx[0][0], rmtx[0][1], rmtx[0][2], tvec[0][0][0]/600],
+                            [rmtx[1][0], rmtx[1][1], rmtx[1][2], tvec[0][0][1]/600],
+                            [rmtx[2][0], rmtx[2][1], rmtx[2][2], tvec[0][0][2]/600],
                             [0.0, 0.0, 0.0, 1.0]])
     view_matrix = view_matrix * INVERSE_MATRIX
     view_matrix = np.transpose(view_matrix)
-    print("0:", tvec[0][0][0]/tvec[0][0][2], "\n", sep=' ')
-    print("1:", tvec[0][0][1] / tvec[0][0][2], "\n", sep=' ')
-    print("2:", tvec[0][0][2] / tvec[0][0][2], "\n", sep=' ')
+    print("0:", tvec[0][0][0], "\n", sep=' ')
+    print("1:", tvec[0][0][1], "\n", sep=' ')
+    print("2:", tvec[0][0][2], "\n", sep=' ')
 
 
     init_object_texture(texture_file)
