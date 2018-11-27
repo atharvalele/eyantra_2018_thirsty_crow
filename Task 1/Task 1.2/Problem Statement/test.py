@@ -130,6 +130,7 @@ def draw_background(image):
     h = glutGet(GLUT_WINDOW_HEIGHT)
     gluOrtho2D(1, -1, -1, 1)
     glMatrixMode(GL_MODELVIEW)
+    glLoadIdentity()
     # convert image to OpenGL texture format
     # bg_image = cv2.flip(image, 1)
     bg_image = Image.fromarray(image)
