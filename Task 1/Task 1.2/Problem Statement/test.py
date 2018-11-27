@@ -128,7 +128,7 @@ def draw_background(image):
     glLoadIdentity()
     w = glutGet(GLUT_WINDOW_WIDTH)
     h = glutGet(GLUT_WINDOW_HEIGHT)
-    gluOrtho2D(0, w, h, 0)
+    gluOrtho2D(1, -1, -1, 1)
     glMatrixMode(GL_MODELVIEW)
     # convert image to OpenGL texture format
     # bg_image = cv2.flip(image, 1)
@@ -181,9 +181,9 @@ def overlay(img, ar_list, ar_id, texture_file):
         if ar_id == x[0]:
             centre, rvec, tvec = x[1], x[2], x[3]
     rmtx = cv2.Rodrigues(rvec)[0]
-    view_matrix = np.array([[rmtx[0][0], rmtx[0][1], rmtx[0][2], tvec[0][0][0]/tvec[0][0][2]],
-                            [rmtx[1][0], rmtx[1][1], rmtx[1][2], tvec[0][0][1]/tvec[0][0][2]],
-                            [rmtx[2][0], rmtx[2][1], rmtx[2][2], tvec[0][0][2]/tvec[0][0][2]],
+    view_matrix = np.array([[rmtx[0][0], rmtx[0][1], rmtx[0][2], tvec[0][0][0]/400],
+                            [rmtx[1][0], rmtx[1][1], rmtx[1][2], tvec[0][0][1]/400],
+                            [rmtx[2][0], rmtx[2][1], rmtx[2][2], tvec[0][0][2]/400],
                             [0.0, 0.0, 0.0, 1.0]])
     view_matrix = view_matrix * INVERSE_MATRIX
     view_matrix = np.transpose(view_matrix)
