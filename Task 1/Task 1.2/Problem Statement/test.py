@@ -124,7 +124,7 @@ def draw_background(image):
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glMatrixMode(GL_PROJECTION)
     glLoadIdentity()
-    gluOrtho2D(1, -1, -1, 1)
+    gluOrtho2D(-1, 1, -1, 1)
     glDisable(GL_DEPTH_TEST)
     glDisable(GL_LIGHTING)
     glDepthMask(GL_FALSE)
@@ -181,9 +181,9 @@ def overlay(img, ar_list, ar_id, texture_file):
         if ar_id == x[0]:
             centre, rvec, tvec = x[1], x[2], x[3]
     rmtx = cv2.Rodrigues(rvec)[0]
-    view_matrix = np.array([[rmtx[0][0], rmtx[0][1], rmtx[0][2], tvec[0][0][0]/600],
-                            [rmtx[1][0], rmtx[1][1], rmtx[1][2], tvec[0][0][1]/600],
-                            [rmtx[2][0], rmtx[2][1], rmtx[2][2], tvec[0][0][2]/600],
+    view_matrix = np.array([[rmtx[0][0], rmtx[0][1], rmtx[0][2], tvec[0][0][0]/1000],
+                            [rmtx[1][0], rmtx[1][1], rmtx[1][2], tvec[0][0][1]/1000],
+                            [rmtx[2][0], rmtx[2][1], rmtx[2][2], tvec[0][0][2]/1000],
                             [0.0, 0.0, 0.0, 1.0]])
     view_matrix = view_matrix * INVERSE_MATRIX
     view_matrix = np.transpose(view_matrix)
