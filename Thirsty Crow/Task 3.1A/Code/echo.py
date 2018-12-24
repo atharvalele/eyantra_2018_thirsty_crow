@@ -5,8 +5,6 @@ if __name__ == "__main__":
     while True:
         user_input = input("Enter key: ")
         ########## ENTER YOUR CODE HERE ############
-
-
-
-
+        ser.write(user_input)
+        data += ser.read()
         ############################################
